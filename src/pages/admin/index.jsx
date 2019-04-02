@@ -22,6 +22,10 @@ const {
 } = Layout;
 
 
+/*const ForwardRef = React.forwardRef((props, ref) => {
+  return <LeftNav ref={ref}/>
+})*/
+
 export default class Admin extends Component {
   /*
     1. 要持久化存储用户信息 --> localStorage
@@ -33,6 +37,8 @@ export default class Admin extends Component {
     this.state = {
       collapsed: false,
     };
+
+    this.createRef = React.createRef();
 
     // 判断用户是否登录过
     const user = getItem();
@@ -49,6 +55,10 @@ export default class Admin extends Component {
     this.setState({ collapsed });
   }
 
+  handleClick = () => {
+    console.log(this.createRef.current)
+  }
+
   render() {
     const { collapsed } = this.state;
     const opacity = collapsed ? 0 : 1;
@@ -60,10 +70,11 @@ export default class Admin extends Component {
           collapsed={collapsed}
           onCollapse={this.onCollapse}
         >
-          <Link to="/home" className="logo">
+          <Link to="/home" className="logo" onClick={this.handleClick}>
             <img src={logo} alt="logo"/>
             <h1 style={{opacity}}>硅谷后台</h1>
           </Link>
+          {/*<ForwardRef ref={this.createRef}/>*/}
           <LeftNav />
         </Sider>
         <Layout>
