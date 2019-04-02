@@ -15,7 +15,7 @@ export default class App extends Component {
       <Switch>
         <Route path="/login" component={Login}/>
         {/* 为了开发login组件设计的 */}
-        <Redirect to="/login"/>
+        {/*<Redirect to="/login"/>*/}
         <Route path="/" component={Admin}/>
       </Switch>
     )

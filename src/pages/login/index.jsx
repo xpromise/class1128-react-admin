@@ -3,8 +3,10 @@
  */
 import React, {Component} from 'react';
 import {
-  Form, Icon, Input, Button
+  Form, Icon, Input, Button, message
 } from 'antd';
+
+import { reqLogin } from '../../api';
 
 import logo from './logo.png';
 import './index.less';
@@ -25,10 +27,25 @@ class Login extends Component {
     // const result = this.props.form.getFieldValue('password');
     // console.log(result);
     // 表单校验的方法
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFields(async (err, values) => {
       if (!err) {
         // 校验成功
-        console.log(values);
+        // console.log(values);
+        const { username, password } = values
+        const result = await reqLogin(username, password);
+        // 判断登录是否成功
+        if (result.status === 0) {
+          // 登录成功
+          // 提示登录成功，保存用户登录信息，跳转到主页面
+          message.success('登录成功~');
+          
+          // 已经登录成功，不需要回退了~
+          this.props.history.replace('/');
+        } else {
+          // 登录失败
+          // 提示错误
+          message.error(result.msg, 2);
+        }
       } else {
         // 校验失败
         console.log('****** 表单校验失败 ******');
