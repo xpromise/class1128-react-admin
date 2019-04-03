@@ -8,7 +8,7 @@
 import axios from 'axios';
 import { message } from 'antd';
 
-export default function ajax(url, data, method = 'GET') {
+export default function ajax(url, data = {}, method = 'GET') {
   // 将请求方式转为大写
   method = method.toUpperCase();
   

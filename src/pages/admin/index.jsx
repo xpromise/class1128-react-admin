@@ -10,21 +10,15 @@ import {
 import Home from '../home';
 import Category from '../category';
 import Product from '../product';
-import LeftNav from '../../components/left-nav';
-import { getItem } from '../../utils/storage-utils';
-import memory from '../../utils/memory-utils';
+import LeftNav from '$comp/left-nav';
+import { getItem } from '$utils/storage-utils';
+import memory from '$utils/memory-utils';
 
-import logo from '../../assets/images/logo.png';
-import './index.less';
 
 const {
   Header, Content, Footer, Sider,
 } = Layout;
 
-
-/*const ForwardRef = React.forwardRef((props, ref) => {
-  return <LeftNav ref={ref}/>
-})*/
 
 export default class Admin extends Component {
   /*
@@ -35,10 +29,8 @@ export default class Admin extends Component {
     super(props);
     // 初始化状态
     this.state = {
-      collapsed: false,
+      collapsed: false
     };
-
-    this.createRef = React.createRef();
 
     // 判断用户是否登录过
     const user = getItem();
@@ -55,9 +47,6 @@ export default class Admin extends Component {
     this.setState({ collapsed });
   }
 
-  handleClick = () => {
-    console.log(this.createRef.current)
-  }
 
   render() {
     const { collapsed } = this.state;
@@ -70,12 +59,7 @@ export default class Admin extends Component {
           collapsed={collapsed}
           onCollapse={this.onCollapse}
         >
-          <Link to="/home" className="logo" onClick={this.handleClick}>
-            <img src={logo} alt="logo"/>
-            <h1 style={{opacity}}>硅谷后台</h1>
-          </Link>
-          {/*<ForwardRef ref={this.createRef}/>*/}
-          <LeftNav />
+          <LeftNav opacity={opacity}/>
         </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }} />

@@ -1,8 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import {Link, withRouter} from 'react-router-dom';
 import { Menu, Icon } from "antd";
 
 import menuList from '../../config/menu-config';
+import logo from '../../assets/images/logo.png';
+import './index.less';
 
 const SubMenu = Menu.SubMenu;
 const Item = Menu.Item;
@@ -11,16 +14,20 @@ const Item = Menu.Item;
 // withRouter作用：给非路由组件传递路由组件三个属性（history、location、match）
 @withRouter
 class LeftNav extends Component {
+  static propTypes = {
+    opacity: PropTypes.number.isRequired
+  }
+
   constructor(props) {
     super(props);
     // 创建菜单
     const openKeys = [];
     this.menus = this.createMenu(menuList, openKeys);
+    // 初始化状态
     this.state = {
       openKeys
     }
   }
-
 
   createItem(item) {
     return <Item key={item.key}>
@@ -36,11 +43,11 @@ class LeftNav extends Component {
    * @param menuList
    */
   createMenu(menuList, openKeys) {
+    // 获取当前的路径
     const { pathname } = this.props.location;
-
+    // 判断是一级菜单、二级菜单
     return menuList.map((menu) => {
       const children = menu.children;
-
       if (children) {
         // 二级菜单
         return <SubMenu
@@ -49,9 +56,7 @@ class LeftNav extends Component {
         >
           {
             children.map((item) => {
-              if (item.key === pathname) {
-                // 说明当前路径选中二级菜单，需要展开一级菜单
-                // this.openKey = menu.key;
+              if (pathname === item.key) {
                 openKeys.push(menu.key);
               }
               return this.createItem(item)
@@ -63,6 +68,7 @@ class LeftNav extends Component {
         // 一级菜单
         return this.createItem(menu);
       }
+
     })
   }
 
@@ -70,16 +76,27 @@ class LeftNav extends Component {
     this.setState({openKeys})
   }
 
+  handleClick = () => {
+    // 收起所有的二级菜单
+    this.setState({openKeys: []})
+  }
+
   render() {
-    // 获取当前的路径
-    const { pathname } = this.props.location;
+    // 提取props
+    const { location : { pathname } , opacity } = this.props;
 
     return (
-      <Menu theme="dark" selectedKeys={[pathname]} mode="inline" openKeys={this.state.openKeys} onOpenChange={this.handleOpenChange}>
-        {
-          this.menus
-        }
-      </Menu>
+      <Fragment>
+        <Link to="/home" className="logo" onClick={this.handleClick}>
+          <img src={logo} alt="logo"/>
+          <h1 style={{opacity}}>硅谷后台</h1>
+        </Link>
+        <Menu theme="dark" selectedKeys={[pathname]} mode="inline" openKeys={this.state.openKeys} onOpenChange={this.handleOpenChange}>
+          {
+            this.menus
+          }
+        </Menu>
+      </Fragment>
     );
   }
 }

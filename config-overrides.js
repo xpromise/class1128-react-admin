@@ -1,7 +1,8 @@
 /**
  * antd用来修改webpack配置的文件
  */
-const { override, fixBabelImports, addLessLoader, addDecoratorsLegacy } = require('customize-cra');
+const { resolve } = require('path');
+const { override, fixBabelImports, addLessLoader, addDecoratorsLegacy, addWebpackAlias } = require('customize-cra');
 
 module.exports = override(
   // 按需加载
@@ -24,5 +25,11 @@ module.exports = override(
       }
     ]
   )*/
-  addDecoratorsLegacy()
+  addDecoratorsLegacy(),
+  addWebpackAlias({
+    $utils: resolve(__dirname, 'src/utils'),
+    $api: resolve(__dirname, 'src/api'),
+    $assets: resolve(__dirname, 'src/assets'),
+    $comp: resolve(__dirname, 'src/components'),
+  })
 );
