@@ -26,6 +26,7 @@ module.exports = override(
     ]
   )*/
   addDecoratorsLegacy(),
+  // 配置路径的别名 - 注意以特殊符号开头，防止与正常路径冲突
   addWebpackAlias({
     $utils: resolve(__dirname, 'src/utils'),
     $api: resolve(__dirname, 'src/api'),
