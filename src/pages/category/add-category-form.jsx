@@ -27,7 +27,6 @@ class AddCategoryForm extends Component {
 
   render() {
     const { form : { getFieldDecorator }, categories } = this.props;
-    console.log(this);
 
     return (
       <Form>
