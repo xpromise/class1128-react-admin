@@ -58,7 +58,6 @@ export default class Admin extends Component {
     if (!memory.user || !memory.user._id) {
       return <Redirect to="/login"/>
     }
-
     const { collapsed } = this.state;
     const opacity = collapsed ? 0 : 1;
 

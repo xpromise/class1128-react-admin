@@ -81,6 +81,23 @@ class LeftNav extends Component {
     this.setState({openKeys: []})
   }
 
+
+  /*
+  // 性能优化 - 减少无效的重新渲染
+  shouldComponentUpdate(newProps, newState) {
+    for (let key in newProps) {
+      if (newProps[key] !== this.props[key]) {
+        return true;
+      }
+    }
+
+    if (this.state.openKeys !== newState.openKeys) {
+      return true;
+    }
+
+    return false;
+  }*/
+
   render() {
     // 提取props
     const { location : { pathname } , opacity } = this.props;
