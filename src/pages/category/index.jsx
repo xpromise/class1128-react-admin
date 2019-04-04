@@ -13,14 +13,20 @@ export default class Category extends Component {
     // 初始化状态
     this.state = {
       categories: [], // 一级分类数据
+      subCategories: [], // 二级分类数据
       isShowAddCategoryModal: false, // 添加分类对话框显示
       isShowUpdateCategoryNameModal: false, // 修改分类名称对话框显示
       category: {}, // 要操作分类数据
+      parentCategory: {},
+      isShowSubCategories: false, // 是否展示二级分类数据
     }
 
     this.createAddForm = React.createRef();
     this.createUpdateForm = React.createRef();
   }
+
+  // 当请求数据为空时，不要loading
+  isLoading = true;
 
   // 定义表格列
   columns = [
@@ -37,11 +43,25 @@ export default class Category extends Component {
         // console.log(category);
         return <div>
           <MyButton onClick={this.showUpdateCategoryNameModal(category)}>修改名称</MyButton>
-          <MyButton>查看其子品类</MyButton>
+          {
+            this.state.isShowSubCategories ? null : <MyButton onClick={this.showSubCategory(category)}>查看其子品类</MyButton>
+          }
         </div>
       },
     }
   ];
+
+  showSubCategory = (parentCategory) => {
+    return () => {
+      // 切换显示
+      this.setState({
+        parentCategory,
+        isShowSubCategories: true
+      })
+      // 请求二级分类数据
+      this.getCategories(parentCategory._id);
+    }
+  }
 
   showUpdateCategoryNameModal = (category) => {
     return () => {
@@ -56,9 +76,25 @@ export default class Category extends Component {
   getCategories = async (parentId) => {
     const result = await reqGetCategories(parentId);
     if (result.status === 0) {
-      this.setState({
-        categories: result.data
-      })
+      // 判断是一级/二级分类
+      const options = {};
+
+      if (result.data.length === 0) {
+        this.isLoading = false;
+        // 等当前更新完成后在调用，目的：让下一次生效
+        setTimeout(() => {
+          this.isLoading = true;
+        }, 0)
+      }
+
+      if (parentId === '0') {
+        options.categories = result.data;
+      } else {
+        options. subCategories = result.data;
+      }
+
+      this.setState(options);
+
     } else {
       message.error(result.msg);
     }
@@ -88,11 +124,19 @@ export default class Category extends Component {
           // 方式一：重新请求所有数据然后更新
           // 方式二：将返回值插入到数据更新 --> 减少请求
           // 隐藏对话框、提示添加分类成功
-          this.setState({
-            isShowAddCategoryModal: false,
-            categories: [...this.state.categories, result.data]
-          })
-
+          // 如果当前在一级分类，添加的是一级分类数据，要显示。添加的是二级分类数据，不显示
+          // 如果当前在二级分类，添加的是一级分类数据，要插入原数据中，添加的是二级分类数据，并且与当前一级分类相同的，才显示
+          if (parentId === '0') {
+            this.setState({
+              isShowAddCategoryModal: false,
+              categories: [...this.state.categories, result.data]
+            })
+          } else if (parentId === this.state.parentCategory._id) {
+            this.setState({
+              isShowAddCategoryModal: false,
+              subCategories: [...this.state.subCategories, result.data]
+            })
+          }
         } else {
           message.error(result.msg);
         }
@@ -104,22 +148,30 @@ export default class Category extends Component {
 
   // 修改分类名称
   updateCategoryName = () => {
-    const { validateFields } = this.createUpdateForm.current.props.form;
+    const { validateFields, resetFields } = this.createUpdateForm.current.props.form;
     validateFields(async (err, values) => {
       if (!err) {
         const { categoryName } = values;
-        const categoryId = this.state.category._id;
-        const result = await reqUpdateCategoryName(categoryId, categoryName);
+        const { category : { _id }, isShowSubCategories } = this.state;
+        const result = await reqUpdateCategoryName(_id, categoryName);
         if (result.status === 0) {
           // 隐藏对话框、提示成功、修改显示的分类名称
           message.success('更新分类名称成功~');
+          // 如果在一级分类，点击修改一级分类数据
+          // 如果在二级分类，点击修改二级分类数据
+          let name = 'categories';
+          if (isShowSubCategories) {
+            name = 'subCategories'
+          }
           this.setState({
             isShowUpdateCategoryNameModal: false,
-            categories: this.state.categories.map((category) => {
-              if (category._id === categoryId) return {...category, name: categoryName};
+            [name]: this.state[name].map((category) => {
+              if (category._id === _id) return {...category, name: categoryName};
               return category;
             })
           })
+          // 重置表单项
+          resetFields();
         } else {
           message.error(result.msg);
         }
@@ -136,19 +188,34 @@ export default class Category extends Component {
     }
   }
 
+  // 回退到一级菜单
+  goBack = () => {
+    this.setState({
+      isShowSubCategories: false
+    })
+  }
+
   render() {
 
-    const { categories, isShowAddCategoryModal, isShowUpdateCategoryNameModal, category } = this.state;
+    const {
+      categories,
+      subCategories,
+      isShowAddCategoryModal,
+      isShowUpdateCategoryNameModal,
+      category : { name } ,
+      parentCategory,
+      isShowSubCategories
+    } = this.state;
 
     return (
       <Card
         className="category"
-        title="一级分类列表"
+        title={isShowSubCategories ? <div><MyButton onClick={this.goBack}>一级分类</MyButton> <Icon type="arrow-right" /> <span>{parentCategory.name}</span> </div> : '一级分类列表'}
         extra={<Button type="primary" onClick={this.changeModal('isShowAddCategoryModal', true)}><Icon type="plus"/>添加品类</Button>}
       >
         <Table
           columns={this.columns}
-          dataSource={categories}
+          dataSource={isShowSubCategories ? subCategories : categories}
           bordered
           pagination={{
             showSizeChanger: true,
@@ -157,6 +224,7 @@ export default class Category extends Component {
             showQuickJumper: true,
           }}
           rowKey="_id"
+          loading={isShowSubCategories ? this.isLoading && !subCategories.length : this.isLoading && !categories.length}
         />
 
         <Modal
@@ -179,7 +247,7 @@ export default class Category extends Component {
           cancelText="取消"
           width={300}
         >
-          <UpdateCategoryNameForm categoryName={category.name} wrappedComponentRef={this.createUpdateForm}/>
+          <UpdateCategoryNameForm categoryName={name} wrappedComponentRef={this.createUpdateForm}/>
         </Modal>
 
       </Card>
