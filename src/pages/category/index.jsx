@@ -83,6 +83,7 @@ export default class Category extends Component {
         this.isLoading = false;
         // 等当前更新完成后在调用，目的：让下一次生效
         setTimeout(() => {
+          // 不会导致组件重新渲染
           this.isLoading = true;
         }, 0)
       }
@@ -126,17 +127,13 @@ export default class Category extends Component {
           // 隐藏对话框、提示添加分类成功
           // 如果当前在一级分类，添加的是一级分类数据，要显示。添加的是二级分类数据，不显示
           // 如果当前在二级分类，添加的是一级分类数据，要插入原数据中，添加的是二级分类数据，并且与当前一级分类相同的，才显示
+          const options = {isShowAddCategoryModal: false};
           if (parentId === '0') {
-            this.setState({
-              isShowAddCategoryModal: false,
-              categories: [...this.state.categories, result.data]
-            })
+            options.categories = [...this.state.categories, result.data];
           } else if (parentId === this.state.parentCategory._id) {
-            this.setState({
-              isShowAddCategoryModal: false,
-              subCategories: [...this.state.subCategories, result.data]
-            })
+            options.subCategories = [...this.state.subCategories, result.data];
           }
+          this.setState(options);
         } else {
           message.error(result.msg);
         }
@@ -182,6 +179,8 @@ export default class Category extends Component {
   // 切换对话框显示/隐藏的方法
   changeModal = (name, isShow) => {
     return () => {
+      // 解决没有点击确认修改分类名称时，清空用户输入的数据，防止下次不能使用默认值
+      if (name === 'isShowUpdateCategoryNameModal' && isShow === false) this.createUpdateForm.current.props.form.resetFields()
       this.setState({
         [name]: isShow
       })
@@ -224,7 +223,11 @@ export default class Category extends Component {
             showQuickJumper: true,
           }}
           rowKey="_id"
-          loading={isShowSubCategories ? this.isLoading && !subCategories.length : this.isLoading && !categories.length}
+          loading={
+            isShowSubCategories
+              ? this.isLoading && !subCategories.length
+              : this.isLoading && !categories.length
+          }
         />
 
         <Modal
