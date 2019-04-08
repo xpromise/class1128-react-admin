@@ -94,7 +94,7 @@ export default class Category extends Component {
       if (parentId === '0') {
         options.categories = result.data;
       } else {
-        options. subCategories = result.data;
+        options.subCategories = result.data;
       }
     } else {
       message.error(result.msg);
