@@ -19,6 +19,7 @@ export default class Category extends Component {
       category: {}, // 要操作分类数据
       parentCategory: {},
       isShowSubCategories: false, // 是否展示二级分类数据
+      isLoading: true, // 决定是否有loading
     }
 
     this.createAddForm = React.createRef();
@@ -26,7 +27,7 @@ export default class Category extends Component {
   }
 
   // 当请求数据为空时，不要loading
-  isLoading = true;
+  // isLoading = true;
 
   // 定义表格列
   columns = [
@@ -74,31 +75,32 @@ export default class Category extends Component {
 
   // 请求分类数据的方法
   getCategories = async (parentId) => {
+
+    this.setState({isLoading: true});
     const result = await reqGetCategories(parentId);
+
+    const options = {isLoading: false};
+
     if (result.status === 0) {
       // 判断是一级/二级分类
-      const options = {};
-
-      if (result.data.length === 0) {
+      /*if (result.data.length === 0) {
         this.isLoading = false;
         // 等当前更新完成后在调用，目的：让下一次生效
         setTimeout(() => {
           // 不会导致组件重新渲染
           this.isLoading = true;
         }, 0)
-      }
-
+      }*/
       if (parentId === '0') {
         options.categories = result.data;
       } else {
         options. subCategories = result.data;
       }
-
-      this.setState(options);
-
     } else {
       message.error(result.msg);
     }
+    this.setState(options);
+
   }
 
   // 发送请求获取数据
@@ -203,9 +205,10 @@ export default class Category extends Component {
       isShowUpdateCategoryNameModal,
       category : { name } ,
       parentCategory,
-      isShowSubCategories
+      isShowSubCategories,
+      isLoading
     } = this.state;
-
+    
     return (
       <Card
         className="category"
@@ -223,11 +226,12 @@ export default class Category extends Component {
             showQuickJumper: true,
           }}
           rowKey="_id"
-          loading={
+          /*loading={
             isShowSubCategories
               ? this.isLoading && !subCategories.length
               : this.isLoading && !categories.length
-          }
+          }*/
+          loading={isLoading}
         />
 
         <Modal
