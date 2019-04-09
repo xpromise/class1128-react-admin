@@ -56,7 +56,7 @@ class LeftNav extends Component {
         >
           {
             children.map((item) => {
-              if (pathname === item.key) {
+              if (pathname.startsWith(item.key)) {
                 openKeys.push(menu.key);
               }
               return this.createItem(item)
@@ -99,7 +99,11 @@ class LeftNav extends Component {
 
   render() {
     // 提取props
-    const { location : { pathname } , opacity } = this.props;
+    let { location : { pathname } , opacity } = this.props;
+
+    if (pathname.startsWith('/product')) {
+      pathname = '/product';
+    }
 
     return (
       <Fragment>

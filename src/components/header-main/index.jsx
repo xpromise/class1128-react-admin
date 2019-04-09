@@ -69,7 +69,7 @@ class HeaderMain extends Component {
       if (children) {
         for (let j = 0, length = children.length; j < length; j++) {
           let item = children[j];
-          if (item.key === pathname) {
+          if (pathname.startsWith(item.key)) {
             return item.title;
           }
         }

@@ -67,3 +67,7 @@ export const reqUpdateProduct = (product) => ajax(prefix + '/manage/product/upda
 
 // 请求获取分类名称函数
 export const reqGetCategoryName = (categoryId) => ajax(prefix + '/manage/category/info', {categoryId});
+
+// 请求搜索函数
+export const reqSearch = (data) => ajax(prefix + '/manage/product/search', data);
+

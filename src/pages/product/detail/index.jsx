@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Icon, List, message } from 'antd';
+import { Card, Icon, List } from 'antd';
 
 import { reqGetCategoryName } from '$api';
 
