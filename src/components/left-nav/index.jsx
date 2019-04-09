@@ -81,7 +81,6 @@ class LeftNav extends Component {
     this.setState({openKeys: []})
   }
 
-
   /*
   // 性能优化 - 减少无效的重新渲染
   shouldComponentUpdate(newProps, newState) {
