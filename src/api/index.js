@@ -64,3 +64,6 @@ export const reqDelImage = (name, id) => ajax(prefix + '/manage/img/delete', {na
 
 // 请求修改产品数据函数
 export const reqUpdateProduct = (product) => ajax(prefix + '/manage/product/update', product, 'POST');
+
+// 请求获取分类名称函数
+export const reqGetCategoryName = (categoryId) => ajax(prefix + '/manage/category/info', {categoryId});

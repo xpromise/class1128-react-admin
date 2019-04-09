@@ -46,16 +46,16 @@ export default class Product extends Component {
       render: (product) => {
 
         return <Fragment>
-          <MyButton>详情</MyButton>
-          <MyButton onClick={this.updateProduct(product)}>修改</MyButton>
+          <MyButton onClick={this.pushPath('/product/detail', product)}>详情</MyButton>
+          <MyButton onClick={this.pushPath('/product/saveupdate', product)}>修改</MyButton>
         </Fragment>
       }
     }
   ]
 
-  updateProduct = (product) => {
+  pushPath = (path, product) => {
     return () => {
-      this.props.history.push('/product/saveupdate', product);
+      this.props.history.push(path, product);
     }
   }
 
