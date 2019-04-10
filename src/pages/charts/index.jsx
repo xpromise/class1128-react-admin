@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Redirect, Switch } from 'react-router-dom';
 
-import Bar from "./bar";
+import Bar from "./lazy-bar";
 import Pie from "./pie";
 import Line from "./line";
 
