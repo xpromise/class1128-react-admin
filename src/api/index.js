@@ -77,5 +77,8 @@ export const reqRoleList = () => ajax(prefix + '/manage/role/list');
 // 请求添加角色数据函数
 export const reqAddRole = (name) => ajax(prefix + '/manage/role/add', {name}, 'POST');
 
-// 请求更新角色数据函数
+// 请求更新产品状态数据函数
 export const reqUpdateRole = (role) => ajax(prefix + '/manage/role/update', {role}, 'POST');
+
+// 请求更新角色数据函数
+export const reqUpdateStatus = (productId, status) => ajax(prefix + '/manage/product/updateStatus', {productId, status}, 'POST');

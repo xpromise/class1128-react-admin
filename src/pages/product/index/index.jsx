@@ -3,7 +3,7 @@ import { Card, Table, Select, Button, Input, Icon, message } from 'antd';
 import { Link } from 'react-router-dom';
 
 import MyButton from '$comp/my-button';
-import { reqGetProducts, reqSearch } from '$api';
+import { reqGetProducts, reqSearch, reqUpdateStatus } from '$api';
 import './index.less';
 
 const Option = Select.Option;
@@ -40,11 +40,18 @@ export default class Product extends Component {
       title: '状态',
       // dataIndex: 'address',
       key: 'status',
-      render: () => {
-        return <Fragment>
-          <Button type="primary">下架</Button>
-          &nbsp; &nbsp;在售
-        </Fragment>
+      render: (product) => {
+        if (product.status === 1) {
+          return <Fragment>
+            <Button type="primary" onClick={this.updateStatus(product)}>下架</Button>
+            &nbsp; &nbsp;在售
+          </Fragment>
+        } else {
+          return <Fragment>
+            <Button type="primary" onClick={this.updateStatus(product)}>上架</Button>
+            &nbsp; &nbsp;已下架
+          </Fragment>
+        }
       }
     },
     {
@@ -60,6 +67,26 @@ export default class Product extends Component {
       }
     }
   ]
+  // 更新产品 上架 / 下架 状态
+  updateStatus = (product) => {
+    const { _id, status } = product;
+    const newStatus = 3 - status;
+    return async () => {
+      const result = await reqUpdateStatus(_id, newStatus);
+      if (result.status === 0) {
+        this.setState({
+          products: this.state.products.map((item) => {
+            if (item._id === _id) {
+              item.status = newStatus;
+            }
+            return item;
+          })
+        })
+      } else {
+        message.error(result.msg);
+      }
+    }
+  }
 
   pushPath = (path, product) => {
     return () => {
