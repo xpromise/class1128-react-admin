@@ -88,6 +88,7 @@ export default class PicturesWall extends Component {
           onChange={this.handleChange}
           name="image"
           data={{id: _id}}
+          accept="image/*"
         >
           {fileList.length >= 3 ? null : uploadButton}
         </Upload>

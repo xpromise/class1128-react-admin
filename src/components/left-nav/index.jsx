@@ -56,7 +56,7 @@ class LeftNav extends Component {
         >
           {
             children.map((item) => {
-              if (pathname.startsWith(item.key)) {
+              if (pathname.startsWith(item.key) || item.key.startsWith(pathname)) {
                 openKeys.push(menu.key);
               }
               return this.createItem(item)

@@ -71,3 +71,11 @@ export const reqGetCategoryName = (categoryId) => ajax(prefix + '/manage/categor
 // 请求搜索函数
 export const reqSearch = (data) => ajax(prefix + '/manage/product/search', data);
 
+// 请求获取权限列表数据函数
+export const reqRoleList = () => ajax(prefix + '/manage/role/list');
+
+// 请求添加角色数据函数
+export const reqAddRole = (name) => ajax(prefix + '/manage/role/add', {name}, 'POST');
+
+// 请求更新角色数据函数
+export const reqUpdateRole = (role) => ajax(prefix + '/manage/role/update', {role}, 'POST');

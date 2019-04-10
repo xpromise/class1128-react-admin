@@ -12,9 +12,7 @@ import Category from '../category';
 import Product from '../product';
 import Role from '../role';
 import User from '../user';
-import Line from '../charts/line';
-import Pie from '../charts/pie';
-import Bar from '../charts/bar';
+import Charts from '../charts';
 import HeaderMain from '$comp/header-main';
 import LeftNav from '$comp/left-nav';
 import { getItem } from '$utils/storage-utils';
@@ -82,9 +80,7 @@ export default class Admin extends Component {
                 <Route path="/product" component={Product}/>
                 <Route path="/user" component={User}/>
                 <Route path="/role" component={Role}/>
-                <Route path="/charts/line" component={Line}/>
-                <Route path="/charts/bar" component={Bar}/>
-                <Route path="/charts/pie" component={Pie}/>
+                <Route path="/charts" component={Charts}/>
                 <Redirect to="/home"/>
               </Switch>
             </div>
