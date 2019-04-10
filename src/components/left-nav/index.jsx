@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {Link, withRouter} from 'react-router-dom';
 import { Menu, Icon } from "antd";
 
+import memory from '$utils/memory-utils';
 import menuList from '../../config/menu-config';
 import logo from '../../assets/images/logo.png';
 import './index.less';
@@ -22,6 +23,8 @@ class LeftNav extends Component {
     super(props);
     // 创建菜单
     const openKeys = [];
+    // const menus = this.getMenu(menuList);
+    // console.log(menus);
     this.menus = this.createMenu(menuList, openKeys);
     // 初始化状态
     this.state = {
@@ -42,7 +45,7 @@ class LeftNav extends Component {
    * 创建菜单项的函数
    * @param menuList
    */
-  createMenu(menuList, openKeys) {
+  /*createMenu(menuList, openKeys) {
     // 获取当前的路径
     const { pathname } = this.props.location;
     // 判断是一级菜单、二级菜单
@@ -70,6 +73,66 @@ class LeftNav extends Component {
       }
 
     })
+  }
+
+  getMenu(menuList) {
+    // 获取当前用户权限数组
+    const { menus } = memory.user.role;
+    // 生成权限数组对应的菜单项
+    return menuList.reduce((prev, curr) => {
+      if (menus.find((menu) => menu === curr.key)) {
+        // 说明当前遍历的curr在权限数组中
+        const children = curr.children;
+        if (children) {
+          // 如果有children，还要判断里面的children是否在权限数组中
+          curr.children = children.filter((item) => menus.find((menu) => menu === item.key));
+        }
+        return [...prev, curr];
+      } else {
+        // 不在
+        return prev;
+      }
+    }, []);
+  }*/
+
+  createMenu(menuList, openKeys) {
+    // 获取当前用户权限数组
+    const { menus } = memory.user.role;
+    const { pathname } = this.props.location;
+
+    // 生成权限数组对应的菜单项
+    return menuList.reduce((prev, curr) => {
+      if (menus.find((menu) => menu === curr.key)) {
+        // 说明当前遍历的curr在权限数组中
+        let children = curr.children;
+        if (children) {
+          // 如果有children，还要判断里面的children是否在权限数组中
+          return [...prev, <SubMenu
+            key={curr.key}
+            title={<span><Icon type={curr.icon} /><span>{curr.title}</span></span>}
+          >
+            {
+              children.reduce((previous, current) => {
+                if (menus.find((menu) => menu === current.key)) {
+                  // 是否展开菜单项
+                  if (pathname.startsWith(current.key) || current.key.startsWith(pathname)) {
+                    openKeys.push(curr.key);
+                  }
+                  return [...previous, this.createItem(current)];
+                } else {
+                  return previous;
+                }
+              }, [])
+            }
+          </SubMenu>]
+        } else {
+          return [...prev, this.createItem(curr)];
+        }
+      } else {
+        // 不在
+        return prev;
+      }
+    }, []);
   }
 
   handleOpenChange = (openKeys) => {
