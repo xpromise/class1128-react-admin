@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Card, Button, Table, Radio, Modal, message } from 'antd';
 import dayjs from 'dayjs';
 
@@ -7,14 +8,24 @@ import UpdateRoleForm from './update-role-form';
 import { reqRoleList, reqAddRole, reqUpdateRole } from '$api';
 import memory from '$utils/memory-utils';
 
+/******* redux *********/
+import { connect } from 'react-redux';
+import { getRoleListAsync, addRoleAsync } from '../../redux/action-creators';
+
 const RadioGroup = Radio.Group;
 
-export default class Role extends Component {
+class Role extends Component {
+  static propTypes = {
+    roles: PropTypes.array.isRequired,
+    getRoleListAsync: PropTypes.func.isRequired,
+    addRoleAsync: PropTypes.func.isRequired
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       value: '',  // 单选的默认值，也就是选中的某个角色的id值
-      roles: [], // 权限数组
+      // roles: [], // 权限数组
       isShowAddRoleModal: false, // 是否展示创建角色的标识
       isShowUpdateRoleModal: false, // 是否展示设置角色的标识
       isDisabled: true,  // 设置角色权限按钮是否禁止使用
@@ -77,17 +88,12 @@ export default class Role extends Component {
       if (!err) {
         const { name } = values;
         // 发送请求
-        const result = await reqAddRole(name);
-        if (result.status === 0) {
-          this.setState({
-            roles: [...this.state.roles, result.data],
-            isShowAddRoleModal: false
-          })
-          // 重置表单项
-          resetFields();
-        } else {
-          message.error(result.msg);
-        }
+        this.props.addRoleAsync(name);
+        // 重置表单项
+        resetFields();
+        this.setState({
+          isShowAddRoleModal: false
+        })
       }
     })
   }
@@ -131,11 +137,12 @@ export default class Role extends Component {
   }
 
   componentDidMount() {
-    this.getRoleList();
+    // this.getRoleList();
+    this.props.getRoleListAsync();
   }
   
   render () {
-    const { roles, value, isDisabled, isShowAddRoleModal, isShowUpdateRoleModal, role } = this.state;
+    const { value, isDisabled, isShowAddRoleModal, isShowUpdateRoleModal, role } = this.state;
     
     return (
       <Card
@@ -149,7 +156,7 @@ export default class Role extends Component {
         <RadioGroup onChange={this.onRadioChange} value={value} style={{width: '100%'}}>
           <Table
             columns={this.columns}
-            dataSource={roles}
+            dataSource={this.props.roles}
             bordered
             rowKey='_id'
             pagination={{
@@ -187,3 +194,11 @@ export default class Role extends Component {
     )
   }
 }
+
+/*********** redux ***************/
+export default connect(
+  // 将redux的状态数据传入的组件中
+  state => ({roles: state.roleList}),
+  // 将操作redux状态数据的方法传入的组件中
+  { getRoleListAsync, addRoleAsync }
+)(Role);

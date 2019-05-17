@@ -6,7 +6,10 @@ import AddUserForm from './add-user-form';
 import UpdateUserForm from './update-user-form';
 import MyButton from '$comp/my-button';
 
-export default class Role extends Component {
+/***** redux ****/
+import { connect } from 'react-redux';
+
+class User extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -120,3 +123,9 @@ export default class Role extends Component {
     )
   }
 }
+
+/******** redux ********/
+export default connect(
+  state => ({roles: state.roleList}),
+  {}
+)(User);
